@@ -273,7 +273,9 @@ mate_pairs.to_csv("mate_pairs_P1_with_pheno.csv", index=False)
 #ANCESTRY AT AM 0
 import pandas as pd
 
-df = pd.read_csv("C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_0\A0aggregated_results_primary.csv")
+df = pd.read_csv(
+    r"C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_0\A0aggregated_results_primary.csv"
+)
 print(df.columns)
 
 offspring = df.dropna(subset=["maternal_id", "paternal_id"]).copy()
@@ -286,11 +288,22 @@ mate_pairs = (
     .reset_index(name="n_offspring")
 )
 
-# parent lookup from SAME generation snapshot
+# FIX 1: parents are typically from generation - 1 (parents of gen g offspring are in gen g-1)
+mate_pairs["parent_generation"] = mate_pairs["generation"] - 1
+
+# parent lookup table
 parents = df[["run_id", "generation", "id", "q_score"]].copy()
 
-moms = parents.rename(columns={"id": "maternal_id", "q_score": "mom_q"})
-dads = parents.rename(columns={"id": "paternal_id", "q_score": "dad_q"})
+moms = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "maternal_id",
+    "q_score": "mom_q"
+})
+dads = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "paternal_id",
+    "q_score": "dad_q"
+})
 
 # make sure IDs are numeric and match
 mate_pairs["maternal_id"] = pd.to_numeric(mate_pairs["maternal_id"], errors="coerce")
@@ -298,15 +311,16 @@ mate_pairs["paternal_id"] = pd.to_numeric(mate_pairs["paternal_id"], errors="coe
 moms["maternal_id"] = pd.to_numeric(moms["maternal_id"], errors="coerce")
 dads["paternal_id"] = pd.to_numeric(dads["paternal_id"], errors="coerce")
 
+# merge using parent_generation (g-1), not offspring generation (g)
 mate_pairs = mate_pairs.merge(
     moms,
-    on=["run_id", "generation", "maternal_id"],
+    on=["run_id", "parent_generation", "maternal_id"],
     how="left"
 )
 
 mate_pairs = mate_pairs.merge(
     dads,
-    on=["run_id", "generation", "paternal_id"],
+    on=["run_id", "parent_generation", "paternal_id"],
     how="left"
 )
 
@@ -315,14 +329,22 @@ print("missing dad_q:", mate_pairs["dad_q"].isna().sum())
 
 mate_pairs = mate_pairs.dropna(subset=["mom_q", "dad_q"]).copy()
 mate_pairs["q_diff"] = (mate_pairs["mom_q"] - mate_pairs["dad_q"]).abs()
+
+# optional: keep the columns tidy
+mate_pairs = mate_pairs.drop(columns=["parent_generation"])
 
 mate_pairs.to_csv("mate_pairs_A0_with_q_and_diff.csv", index=False)
 print("Saved rows:", len(mate_pairs))
 
 
 
+
 #ANCESTRY AT AM 0.25
-df = pd.read_csv("C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_0.25\A0.25aggregated_results_primary.csv")
+import pandas as pd
+
+df = pd.read_csv(
+    r"C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_0.25\A0.25aggregated_results_primary.csv"
+)
 print(df.columns)
 
 offspring = df.dropna(subset=["maternal_id", "paternal_id"]).copy()
@@ -335,11 +357,22 @@ mate_pairs = (
     .reset_index(name="n_offspring")
 )
 
-# parent lookup from SAME generation snapshot
+# FIX 1: parents are typically from generation - 1 (parents of gen g offspring are in gen g-1)
+mate_pairs["parent_generation"] = mate_pairs["generation"] - 1
+
+# parent lookup table
 parents = df[["run_id", "generation", "id", "q_score"]].copy()
 
-moms = parents.rename(columns={"id": "maternal_id", "q_score": "mom_q"})
-dads = parents.rename(columns={"id": "paternal_id", "q_score": "dad_q"})
+moms = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "maternal_id",
+    "q_score": "mom_q"
+})
+dads = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "paternal_id",
+    "q_score": "dad_q"
+})
 
 # make sure IDs are numeric and match
 mate_pairs["maternal_id"] = pd.to_numeric(mate_pairs["maternal_id"], errors="coerce")
@@ -347,15 +380,16 @@ mate_pairs["paternal_id"] = pd.to_numeric(mate_pairs["paternal_id"], errors="coe
 moms["maternal_id"] = pd.to_numeric(moms["maternal_id"], errors="coerce")
 dads["paternal_id"] = pd.to_numeric(dads["paternal_id"], errors="coerce")
 
+# merge using parent_generation (g-1), not offspring generation (g)
 mate_pairs = mate_pairs.merge(
     moms,
-    on=["run_id", "generation", "maternal_id"],
+    on=["run_id", "parent_generation", "maternal_id"],
     how="left"
 )
 
 mate_pairs = mate_pairs.merge(
     dads,
-    on=["run_id", "generation", "paternal_id"],
+    on=["run_id", "parent_generation", "paternal_id"],
     how="left"
 )
 
@@ -364,6 +398,9 @@ print("missing dad_q:", mate_pairs["dad_q"].isna().sum())
 
 mate_pairs = mate_pairs.dropna(subset=["mom_q", "dad_q"]).copy()
 mate_pairs["q_diff"] = (mate_pairs["mom_q"] - mate_pairs["dad_q"]).abs()
+
+# optional: keep the columns tidy
+mate_pairs = mate_pairs.drop(columns=["parent_generation"])
 
 mate_pairs.to_csv("mate_pairs_A0.25_with_q_and_diff.csv", index=False)
 print("Saved rows:", len(mate_pairs))
@@ -371,8 +408,13 @@ print("Saved rows:", len(mate_pairs))
 
 
 
+
 #ANCESTRY AT AM 0.5
-df = pd.read_csv("C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_0.5\A0.5aggregated_results_primary.csv")
+import pandas as pd
+
+df = pd.read_csv(
+    r"C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_0.5\A0.5aggregated_results_primary.csv"
+)
 print(df.columns)
 
 offspring = df.dropna(subset=["maternal_id", "paternal_id"]).copy()
@@ -385,11 +427,22 @@ mate_pairs = (
     .reset_index(name="n_offspring")
 )
 
-# parent lookup from SAME generation snapshot
+# FIX 1: parents are typically from generation - 1 (parents of gen g offspring are in gen g-1)
+mate_pairs["parent_generation"] = mate_pairs["generation"] - 1
+
+# parent lookup table
 parents = df[["run_id", "generation", "id", "q_score"]].copy()
 
-moms = parents.rename(columns={"id": "maternal_id", "q_score": "mom_q"})
-dads = parents.rename(columns={"id": "paternal_id", "q_score": "dad_q"})
+moms = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "maternal_id",
+    "q_score": "mom_q"
+})
+dads = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "paternal_id",
+    "q_score": "dad_q"
+})
 
 # make sure IDs are numeric and match
 mate_pairs["maternal_id"] = pd.to_numeric(mate_pairs["maternal_id"], errors="coerce")
@@ -397,15 +450,16 @@ mate_pairs["paternal_id"] = pd.to_numeric(mate_pairs["paternal_id"], errors="coe
 moms["maternal_id"] = pd.to_numeric(moms["maternal_id"], errors="coerce")
 dads["paternal_id"] = pd.to_numeric(dads["paternal_id"], errors="coerce")
 
+# merge using parent_generation (g-1), not offspring generation (g)
 mate_pairs = mate_pairs.merge(
     moms,
-    on=["run_id", "generation", "maternal_id"],
+    on=["run_id", "parent_generation", "maternal_id"],
     how="left"
 )
 
 mate_pairs = mate_pairs.merge(
     dads,
-    on=["run_id", "generation", "paternal_id"],
+    on=["run_id", "parent_generation", "paternal_id"],
     how="left"
 )
 
@@ -414,14 +468,23 @@ print("missing dad_q:", mate_pairs["dad_q"].isna().sum())
 
 mate_pairs = mate_pairs.dropna(subset=["mom_q", "dad_q"]).copy()
 mate_pairs["q_diff"] = (mate_pairs["mom_q"] - mate_pairs["dad_q"]).abs()
+
+# optional: keep the columns tidy
+mate_pairs = mate_pairs.drop(columns=["parent_generation"])
 
 mate_pairs.to_csv("mate_pairs_A0.5_with_q_and_diff.csv", index=False)
 print("Saved rows:", len(mate_pairs))
 
 
 
+
+
 #ANCESTRY AT AM 0.75
-df = pd.read_csv("C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_0.75\A0.75aggregated_results_primary.csv")
+import pandas as pd
+
+df = pd.read_csv(
+    r"C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_0.75\A0.75aggregated_results_primary.csv"
+)
 print(df.columns)
 
 offspring = df.dropna(subset=["maternal_id", "paternal_id"]).copy()
@@ -434,11 +497,22 @@ mate_pairs = (
     .reset_index(name="n_offspring")
 )
 
-# parent lookup from SAME generation snapshot
+# FIX 1: parents are typically from generation - 1 (parents of gen g offspring are in gen g-1)
+mate_pairs["parent_generation"] = mate_pairs["generation"] - 1
+
+# parent lookup table
 parents = df[["run_id", "generation", "id", "q_score"]].copy()
 
-moms = parents.rename(columns={"id": "maternal_id", "q_score": "mom_q"})
-dads = parents.rename(columns={"id": "paternal_id", "q_score": "dad_q"})
+moms = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "maternal_id",
+    "q_score": "mom_q"
+})
+dads = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "paternal_id",
+    "q_score": "dad_q"
+})
 
 # make sure IDs are numeric and match
 mate_pairs["maternal_id"] = pd.to_numeric(mate_pairs["maternal_id"], errors="coerce")
@@ -446,15 +520,16 @@ mate_pairs["paternal_id"] = pd.to_numeric(mate_pairs["paternal_id"], errors="coe
 moms["maternal_id"] = pd.to_numeric(moms["maternal_id"], errors="coerce")
 dads["paternal_id"] = pd.to_numeric(dads["paternal_id"], errors="coerce")
 
+# merge using parent_generation (g-1), not offspring generation (g)
 mate_pairs = mate_pairs.merge(
     moms,
-    on=["run_id", "generation", "maternal_id"],
+    on=["run_id", "parent_generation", "maternal_id"],
     how="left"
 )
 
 mate_pairs = mate_pairs.merge(
     dads,
-    on=["run_id", "generation", "paternal_id"],
+    on=["run_id", "parent_generation", "paternal_id"],
     how="left"
 )
 
@@ -463,14 +538,24 @@ print("missing dad_q:", mate_pairs["dad_q"].isna().sum())
 
 mate_pairs = mate_pairs.dropna(subset=["mom_q", "dad_q"]).copy()
 mate_pairs["q_diff"] = (mate_pairs["mom_q"] - mate_pairs["dad_q"]).abs()
+
+# optional: keep the columns tidy
+mate_pairs = mate_pairs.drop(columns=["parent_generation"])
 
 mate_pairs.to_csv("mate_pairs_A0.75_with_q_and_diff.csv", index=False)
 print("Saved rows:", len(mate_pairs))
 
 
 
+
+
 #ANCESTRY AT AM 1
-df = pd.read_csv("C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_1\A1aggregated_results_primary.csv")
+
+import pandas as pd
+
+df = pd.read_csv(
+    r"C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-Deer-Stimulation\IBD_A_kq_1\A1aggregated_results_primary.csv"
+)
 print(df.columns)
 
 offspring = df.dropna(subset=["maternal_id", "paternal_id"]).copy()
@@ -483,11 +568,22 @@ mate_pairs = (
     .reset_index(name="n_offspring")
 )
 
-# parent lookup from SAME generation snapshot
+# FIX 1: parents are typically from generation - 1 (parents of gen g offspring are in gen g-1)
+mate_pairs["parent_generation"] = mate_pairs["generation"] - 1
+
+# parent lookup table
 parents = df[["run_id", "generation", "id", "q_score"]].copy()
 
-moms = parents.rename(columns={"id": "maternal_id", "q_score": "mom_q"})
-dads = parents.rename(columns={"id": "paternal_id", "q_score": "dad_q"})
+moms = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "maternal_id",
+    "q_score": "mom_q"
+})
+dads = parents.rename(columns={
+    "generation": "parent_generation",
+    "id": "paternal_id",
+    "q_score": "dad_q"
+})
 
 # make sure IDs are numeric and match
 mate_pairs["maternal_id"] = pd.to_numeric(mate_pairs["maternal_id"], errors="coerce")
@@ -495,15 +591,16 @@ mate_pairs["paternal_id"] = pd.to_numeric(mate_pairs["paternal_id"], errors="coe
 moms["maternal_id"] = pd.to_numeric(moms["maternal_id"], errors="coerce")
 dads["paternal_id"] = pd.to_numeric(dads["paternal_id"], errors="coerce")
 
+# merge using parent_generation (g-1), not offspring generation (g)
 mate_pairs = mate_pairs.merge(
     moms,
-    on=["run_id", "generation", "maternal_id"],
+    on=["run_id", "parent_generation", "maternal_id"],
     how="left"
 )
 
 mate_pairs = mate_pairs.merge(
     dads,
-    on=["run_id", "generation", "paternal_id"],
+    on=["run_id", "parent_generation", "paternal_id"],
     how="left"
 )
 
@@ -513,10 +610,11 @@ print("missing dad_q:", mate_pairs["dad_q"].isna().sum())
 mate_pairs = mate_pairs.dropna(subset=["mom_q", "dad_q"]).copy()
 mate_pairs["q_diff"] = (mate_pairs["mom_q"] - mate_pairs["dad_q"]).abs()
 
+# optional: keep the columns tidy
+mate_pairs = mate_pairs.drop(columns=["parent_generation"])
+
 mate_pairs.to_csv("mate_pairs_A1_with_q_and_diff.csv", index=False)
 print("Saved rows:", len(mate_pairs))
-
-
 
 
 
