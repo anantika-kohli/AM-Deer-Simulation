@@ -25,15 +25,15 @@ for (i in seq_along(assort_strength)) {
     pheno_loci_indices = 1:100,
     pheno_heritability = 0.3,
     species_A_ratio = 0.5,
-    min_fitness_scalar = 1,  #ask what this parameter should be included for now and what scale to set
+    min_fitness_scalar = 0.5,  #ask what this parameter should be included for now and what scale to set
     
-    weight_dist = 0.9,
-    weight_q = 0.1,
+    weight_dist = 0.1,
+    weight_q = 0.9,
     weight_p = 0,              # phenotype assortment OFF
     
-    k_dist = 10.0,
+    k_dist = 5.0,
     k_q = k_scaled[i],         # SCALED sweep
-    k_p = 1.0                  # irrelevant here
+    k_p = 1                 # irrelevant here
   )
 }
 
@@ -62,7 +62,7 @@ for (i in seq_along(assort_strength)) {
     weight_p = 0.1,
     
     k_dist = 10.0,
-    k_q = 1.0,                 # irrelevant here
+    k_q = 1,                 # irrelevant here
     k_p = k_scaled[i]          # SCALED sweep
   )
 }
