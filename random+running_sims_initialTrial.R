@@ -1,7 +1,7 @@
 rm(list = ls())
 gc()
 
-source("Gene-Tinder.R")
+source("Gene-Tinder (1).R")
 
 # Assortative mating gradient
 assort_strength <- c(0, 0.25, 0.50, 0.75, 1)
@@ -14,7 +14,7 @@ results_kq <- vector("list", length(assort_strength))
 for (i in seq_along(assort_strength)) {
   
   results_kq[[i]] <- Gene_Tinder(
-    experiment_name = paste0("IBD_kq_", assort_strength[i]),
+    experiment_name = paste0("IBD_A_kq_", assort_strength[i]),
     num_runs = 10,
     parallel = TRUE,
     
@@ -44,7 +44,7 @@ results_kp <- vector("list", length(assort_strength))
 for (i in seq_along(assort_strength)) {  
   
   results_kp[[i]] <- Gene_Tinder(
-    experiment_name = paste0("IBD_kp_", assort_strength[i]),
+    experiment_name = paste0("IBD_P_kp_", assort_strength[i]),
     num_runs = 10,
     parallel = TRUE,
     
@@ -89,7 +89,7 @@ for (i in seq_along(assort_strength)) {
     
     k_dist = 10.0,
     k_q = 1.0,                 # irrelevant here
-    k_p = k_scaled[i]          # SCALED sweep
+    k_p = 1.0         # SCALED sweep
   )
 
 names(results_kp) <- paste0("kp_", assort_strength)
