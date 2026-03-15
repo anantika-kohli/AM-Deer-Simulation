@@ -414,7 +414,7 @@ plt.show()
 
 
 #ALL PLOTS FROM EACH SIMULATION ON ONE legend fixed
-import os
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -449,23 +449,12 @@ for sim, color in zip(sim_folders, colors):
 
 plt.xlabel("Assortative mating strength", fontsize=10)
 plt.ylabel("Mean |Δq| between mates", fontsize=10)
-plt.title("Mate-pair ancestry difference vs assortative mating", fontsize=11)
+plt.title("Mate-pair Ancestry difference vs Assortative mating", fontsize=11)
 plt.grid(alpha=0.25)
 
 
-legend_elements = [
-    Line2D([0], [0], color="black", lw=2, linestyle="-", label="Ancestry"),
-    Line2D([0], [0], color="black", lw=2, linestyle="--", label="Phenotype")
-]
-
-plt.legend(
-    handles=legend_elements,
-    title="Assortment type",
-    loc="center left",
-    bbox_to_anchor=(1.02, 0.5),
-    fontsize=10
-)
-
-plt.tight_layout(rect=[0, 0, 0.82, 1])  # reserve space for legend
+plt.subplots_adjust(left=0.22, right=0.95, top=0.90, bottom=0.15)
+plt.ylim(0, 0.5)
+plt.axhline(rand_q_mean, linestyle="-", color= "black", label="Random mating baseline")
 plt.show()
 
