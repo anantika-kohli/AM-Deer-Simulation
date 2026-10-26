@@ -49,7 +49,7 @@ plt.show()
 
 
 
-
+#Chatgpt response for getting IBD file as random baseline (did not use though)
 #RANDOM MATING
 
 import os
@@ -189,9 +189,7 @@ for s in assort_strength:
     dfP = pd.read_csv(f"5mate_pairs_P{s}_with_pheno.csv")
     phenotype_means.append(dfP["pheno_diff"].mean())
 
-# -----------------------
-# Plot
-# -----------------------
+
 plt.figure(figsize=(8,5))
 
 plt.plot(
@@ -230,7 +228,7 @@ plt.show()
 
 
 
-#ALL PLOTS FROM EACH SIMULATION ON ONE
+#ALL PLOTS FROM EACH SIMULATION ON ONE (what was used) - Basic code needs manual creation of the sim folders.
 
 import os
 import pandas as pd
@@ -241,10 +239,10 @@ BASE_DIR = r"C:\Users\Anantika\OneDrive - York University\Documents\Desktop\AM-D
 sim_folders = ["sim1", "sim2", "sim3", "sim4", "sim5"]
 k_vals = [0, 0.25, 0.5, 0.75, 1]
 
-A_FILE = "{SIM}mate_pairs_A{K}_with_q_and_diff.csv"
-P_FILE = "{SIM}mate_pairs_kp_{K}_with_q.csv"
+A_FILE = "{SIM}mate_pairs_A{K}_with_q_and_diff.csv" #made a folder A file for my ancestry output (mannual)
+P_FILE = "{SIM}mate_pairs_kp_{K}_with_q.csv" #made a folder P flife for my phenotype output (mannual)
 
-colors = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple"]
+colors = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple"] #each for the 5 strengths
 
 plt.figure(figsize=(9,5))
 
